@@ -1,0 +1,20 @@
+// Get online players and some information about them
+//@no-log
+GET http://localhost:1850/api/online_players
+###
+
+// Full player statistics (player must be online)
+//@no-log
+GET http://localhost:1850/api/full_player_stats/75418e9c-34ef-4926-af64-96d98d10954c
+###
+
+// Server info
+//@no-log
+GET http://localhost:1850/api/server_info
+###
+
+// Offline player stats (only returns stats under the general category)
+//@no-log
+//GET http://localhost:1850/api/offline_player_stats/75418e9c-34ef-4926-af64-96d98d10954c
+// Disabled due to timeout bug
+

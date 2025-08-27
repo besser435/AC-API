@@ -1,0 +1,10 @@
+name: AtlasCivs-API
+version: ${project.version}
+main: me.besser.ACAPI
+api-version: '1.21'
+prefix: ACAPI
+authors: [besser]
+contributors: []
+description: A super simple API for fetching info about AtlasCivs.
+website: https://github.com/besser435/AC-API
+depend: [Essentials]
