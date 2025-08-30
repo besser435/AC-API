@@ -1,4 +1,4 @@
-name: AtlasCivs-API
+name: AtlasCivsAPI
 version: ${project.version}
 main: me.besser.ACAPI
 api-version: '1.21'
@@ -8,3 +8,11 @@ contributors: []
 description: A super simple API for fetching info about AtlasCivs.
 website: https://github.com/besser435/AC-API
 depend: [Essentials]
+
+commands:
+  atlas:
+    # TODO: fix this, atlas should be nice and proper, not include bio in the main thing. this should
+    # specifically be for the bio command
+    description: Main command for ACAPI/AtlasCivs
+    usage: /<command> bio <biography>
+    permission: atlas.use
