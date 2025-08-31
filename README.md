@@ -9,20 +9,11 @@ Spark isn't updated anymore, transition to something else like Javalin. <br>
 Try to actually be compliant with the [json:api spec](https://jsonapi.org/). <br>
 Store player statistics locally so that offline players can still be queried.
 
-Data is **not** normalized. For example, we have Towny UUIDs and names in several endpoints. 
-In the `online_players` endpoint, we have `town`, `town_name`, `nation`,`nation_name`. And in the towny endpoint, 
-we have a `residents` array with player UUIDs. This is nice as we don't have to query `online_players`, then query `towny`
-to get the name of a Town a player is in. But it is bad, as we repeat a lot of information. 
-
-When it comes to building the database (external project that relies on ACAPI), it will be larger than it has to as the data is not normalized. This is bad,
-and should be addressed in the future.
-
 ## Configuration
-In the `config.yml` file, there are a few options. `enable`, `port`, `discord_channel_id`, & `afk_timeout`.
+In the `config.yml` file, there are a few options.
 
 ACAPI implements a nano sized HTTP server for replying to requests, and as such
 needs to live on a port. The default port for the server is 1850.
-
 
 ## Endpoints
   Most endpoint fields are self-explanatory. Where they are not, there will be a note.
@@ -43,7 +34,8 @@ Example response:
     "75418e9c-34ef-4926-af64-96d98d10954c": {
       "name": "brandonusa",
       "online_duration": 5424,
-      "afk_duration": 0
+      "afk_duration": 0,
+      "bio": "Money or else!"
     }
   }
 }

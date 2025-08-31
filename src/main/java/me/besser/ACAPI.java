@@ -1,9 +1,6 @@
 package me.besser;
 
-import com.earth2me.essentials.Essentials;
 import me.besser.commands.CommandHandler;
-import org.bukkit.ChatColor;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
@@ -11,7 +8,6 @@ import java.util.Objects;
 import static me.besser.BesserLogger.*;
 
 public final class ACAPI extends JavaPlugin {
-    private static Essentials essentials = null;
 
     @Override
     public void onEnable() {
@@ -26,13 +22,6 @@ public final class ACAPI extends JavaPlugin {
             return;
         }
 
-        // TODO: is Essentials needed for functions other than money?
-//        if (!setupEssentials()) { // TODO: add any other depends here.
-//            log(SEVERE, "Dependencies are missing. ACAPI will not start.");
-//            getServer().getPluginManager().disablePlugin(this);
-//            return;
-//        }
-
         // Set up commands
         CommandHandler handler = new CommandHandler(this);
 
@@ -43,9 +32,12 @@ public final class ACAPI extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("ac")).setTabCompleter(handler);
 
         // Create shared tracker objects
+        // TODO: expose these with getters so we can use their methods in other files without creating new ones,
+        // which might cause issues in the future.
         PlayerTracker playerTracker = new PlayerTracker(this);
         PlayerStatTracker playerStatTracker = new PlayerStatTracker();
         ServerInfoTracker serverInfoTracker = new ServerInfoTracker(this);
+        PVPTracker PVPTracker = new PVPTracker(this);
 
         // Register events for trackers
         getServer().getPluginManager().registerEvents(playerTracker, this);
@@ -60,21 +52,6 @@ public final class ACAPI extends JavaPlugin {
 
         log(INFO, "AtlasCivs API v" + getDescription().getVersion() + " started!");
     }
-
-//    private boolean setupEssentials() {
-//        Plugin essentialsPlugin = getServer().getPluginManager().getPlugin("Essentials");
-//        if (essentialsPlugin instanceof Essentials) {
-//            essentials = (Essentials) essentialsPlugin;
-//            return true;
-//        } else {
-//            log(SEVERE, "Essentials plugin not found!");
-//            return false;
-//        }
-//    }
-//
-//    public static Essentials getEssentials() {
-//        return essentials;
-//    }
 
     @Override
     public void onDisable() {
