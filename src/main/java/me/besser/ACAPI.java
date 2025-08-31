@@ -1,6 +1,7 @@
 package me.besser;
 
 import com.earth2me.essentials.Essentials;
+import me.besser.commands.CommandHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -11,7 +12,6 @@ import static me.besser.BesserLogger.*;
 
 public final class ACAPI extends JavaPlugin {
     private static Essentials essentials = null;
-    //private ACAPIDatabase database;
 
     @Override
     public void onEnable() {
@@ -27,15 +27,20 @@ public final class ACAPI extends JavaPlugin {
         }
 
         // TODO: is Essentials needed for functions other than money?
-        if (!setupEssentials()) { // TODO: add any other depends here.
-            log(SEVERE, "Dependencies are missing. ACAPI will not start.");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
+//        if (!setupEssentials()) { // TODO: add any other depends here.
+//            log(SEVERE, "Dependencies are missing. ACAPI will not start.");
+//            getServer().getPluginManager().disablePlugin(this);
+//            return;
+//        }
 
         // Set up commands
-        //Objects.requireNonNull(this.getCommand("atlas")).setExecutor(new BiographyCommand());
-        Objects.requireNonNull(this.getCommand("atlas")).setExecutor(new BioCommandTest(this));
+        CommandHandler handler = new CommandHandler(this);
+
+        Objects.requireNonNull(this.getCommand("atlas")).setExecutor(handler);
+        Objects.requireNonNull(this.getCommand("atlas")).setTabCompleter(handler);
+
+        Objects.requireNonNull(this.getCommand("ac")).setExecutor(handler);
+        Objects.requireNonNull(this.getCommand("ac")).setTabCompleter(handler);
 
         // Create shared tracker objects
         PlayerTracker playerTracker = new PlayerTracker(this);
@@ -53,29 +58,26 @@ public final class ACAPI extends JavaPlugin {
             serverInfoTracker
         );
 
-        log(INFO, ChatColor.AQUA + "AtlasCivs API " + ChatColor.GOLD + "v" + getDescription().getVersion() + ChatColor.RESET + " started!");
+        log(INFO, "AtlasCivs API v" + getDescription().getVersion() + " started!");
     }
 
-    private boolean setupEssentials() {
-        Plugin essentialsPlugin = getServer().getPluginManager().getPlugin("Essentials");
-        if (essentialsPlugin instanceof Essentials) {
-            essentials = (Essentials) essentialsPlugin;
-            return true;
-        } else {
-            log(SEVERE, "Essentials plugin not found!");
-            return false;
-        }
-    }
-
-    public static Essentials getEssentials() {
-        return essentials;
-    }
+//    private boolean setupEssentials() {
+//        Plugin essentialsPlugin = getServer().getPluginManager().getPlugin("Essentials");
+//        if (essentialsPlugin instanceof Essentials) {
+//            essentials = (Essentials) essentialsPlugin;
+//            return true;
+//        } else {
+//            log(SEVERE, "Essentials plugin not found!");
+//            return false;
+//        }
+//    }
+//
+//    public static Essentials getEssentials() {
+//        return essentials;
+//    }
 
     @Override
     public void onDisable() {
-        log(INFO, ChatColor.AQUA + "AtlasCivs API " + ChatColor.GOLD + "v" + getDescription().getVersion() + ChatColor.RESET + " stopped!");
-
-        // No chatTracker shutdown message, as that message would be lost on the restart,
-        // and is unlikely to be fetched by the API before the server goes down.
+        log(INFO, "AtlasCivs API v" + getDescription().getVersion() + " stopped!");
     }
 }

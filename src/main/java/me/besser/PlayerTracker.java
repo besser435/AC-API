@@ -3,6 +3,7 @@ package me.besser;
 import com.earth2me.essentials.Essentials;
 import com.earth2me.essentials.User;
 import com.google.gson.JsonObject;
+import me.besser.commands.BiographyManager;
 import net.ess3.api.IEssentials;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,10 +22,11 @@ public class PlayerTracker implements Listener {
     private final Map<Player, Long> lastMoveTime = new HashMap<>();
     private final Map<Player, Long> joinTime = new HashMap<>();
     private final int AFK_THRESHOLD;
-
+    private final BiographyManager biographyManager;
 
     public PlayerTracker(ACAPI plugin) {
         this.AFK_THRESHOLD = plugin.getConfig().getInt("acapi.afk_timeout", 180) * 1000;
+        this.biographyManager = new BiographyManager(plugin);
     }
 
     @EventHandler
@@ -82,16 +84,11 @@ public class PlayerTracker implements Listener {
         // Add player information keyed by UUID
         JsonObject playersObject = new JsonObject();
 
-        Essentials ess = ACAPI.getEssentials(); // TODO: remove
-
         for (Player player : org.bukkit.Bukkit.getOnlinePlayers()) {
             JsonObject playerData = new JsonObject();
+            String biography = biographyManager.getBiography(player);
 
-            User user = ess.getUser(player);// TODO: remove
-            // TODO: remove
-            log(WARNING, "getNick: " + user.getNick());
-            log(WARNING, "getLongNick: " + user.getNick(true));
-            log(WARNING, "formatted: " + user.getFormattedNickname());
+            playerData.addProperty("bio", biography != null ? biography : "");
 
             playerData.addProperty("name", player.getName());
 

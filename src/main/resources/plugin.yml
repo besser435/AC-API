@@ -11,8 +11,13 @@ depend: [Essentials]
 
 commands:
   atlas:
-    # TODO: fix this, atlas should be nice and proper, not include bio in the main thing. this should
-    # specifically be for the bio command
-    description: Main command for ACAPI/AtlasCivs
-    usage: /<command> bio <biography>
-    permission: atlas.use
+    description: Main command for ACAPI
+    permission: acapi.use
+  ac:
+    description: Main command for ACAPI
+    permission: acapi.use
+
+permissions:
+  acapi.use:
+    description: Lets players use the /atlas command and /ac shorthand.
+    default: true
