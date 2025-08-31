@@ -1,10 +1,7 @@
 package me.besser;
 
-import com.earth2me.essentials.Essentials;
-import com.earth2me.essentials.User;
 import com.google.gson.JsonObject;
 import me.besser.commands.BiographyManager;
-import net.ess3.api.IEssentials;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

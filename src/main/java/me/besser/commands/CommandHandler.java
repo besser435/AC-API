@@ -1,7 +1,11 @@
 package me.besser.commands;
 
 import me.besser.ACAPI;
+import me.besser.ServerInfoTracker;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -12,31 +16,44 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static me.besser.BesserLogger.*;
+
+
 // TODO: This class is very messy. We should look at how the pros do it, and copy them.
+// its so bad oh my god
+
+
 public class CommandHandler implements CommandExecutor, TabCompleter {
 
     private final BiographyManager bioManager;
     private final int maxBioChars;
+    private final ACAPI plugin;
 
     public CommandHandler(ACAPI plugin) {
         this.bioManager = new BiographyManager(plugin);
         this.maxBioChars = plugin.getConfig().getInt("acapi.max_biography_characters");
+        this.plugin = plugin;
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!(sender instanceof Player player)) {
+        if (!(sender instanceof Player player)) {   // breaks about command in console. again, redo this method.
             sender.sendMessage("§cOnly players can use this command.");
             return true;
         }
 
         if (args.length == 0) {
-            player.sendMessage("§cUsage: /" + label + " bio [set|clear|<player>] [text]");
+            player.sendMessage("§cUsage: /" + label + " bio [set | clear | <player>] [text]");
+            player.sendMessage("§cUsage: /" + label + " about");
             return true;
         }
 
         if (args[0].equalsIgnoreCase("bio")) {
             return handleBioCommand(player, args);
+        }
+
+        if (args[0].equalsIgnoreCase("about")) {
+            return handlePluginAbout(sender);
         }
 
         player.sendMessage("§cUnknown subcommand. Try /" + label + " bio");
@@ -115,6 +132,37 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    private boolean handlePluginAbout(CommandSender sender) {
+        String name = plugin.getDescription().getName();
+        String description = plugin.getDescription().getDescription();
+        String version = plugin.getDescription().getVersion();
+        String authors = String.join(", ", plugin.getDescription().getAuthors());
+        String website = plugin.getDescription().getWebsite();
+        ServerInfoTracker serverInfoTracker = new ServerInfoTracker(plugin);    // making a new one is easier for lazy people 🗣️
+        //ServerInfoTracker serverInfoTracker = ACAPI.getServerInfoTracker();
+
+        String build = serverInfoTracker.getPluginBuildTime();
+
+        sender.sendMessage(ChatColor.GREEN + "············ " + ChatColor.AQUA + name + ChatColor.GREEN + " ············");
+        sender.sendMessage(ChatColor.AQUA + description);
+        sender.sendMessage(ChatColor.YELLOW + "Version: " + ChatColor.RESET + version);
+        sender.sendMessage(ChatColor.YELLOW + "Build: " + ChatColor.RESET + build);
+        sender.sendMessage(ChatColor.YELLOW + "Authors: " + ChatColor.RESET + authors);
+
+        TextComponent link = new TextComponent("AC-API GitHub");
+        link.setColor(ChatColor.BLUE.asBungee());
+        link.setUnderlined(true);
+        link.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, website));
+
+        if (sender instanceof Player) {
+            ((Player) sender).spigot().sendMessage(link);
+        } else {
+            sender.sendMessage(website);
+        }
+
+        return true;
+    }
+
     // Helper methods
     private String getArg(String[] args, int index) {
         return (args.length > index) ? args[index] : "";
@@ -135,7 +183,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
         if (args.length == 1) {
-            return List.of("bio");
+            return List.of("about", "bio"); // sure, hard code that shit
         }
 
         if (args.length == 2 && args[0].equalsIgnoreCase("bio")) {

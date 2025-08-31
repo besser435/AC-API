@@ -4,7 +4,7 @@ acapi:
   # How long a player has to not move for in order to be counted as AFK (seconds)
   afk_timeout: 180
   # How long can a player's biography be set to (number of characters)
-  # Recommended to leave at 54, as that is what looks best on the website.
+  # Recommended to leave at 60, as that is what looks best on the website.
   max_biography_characters: 60
 
 server:

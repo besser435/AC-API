@@ -38,7 +38,7 @@ public class ServerInfoTracker {
         return serverInfo;
     }
 
-    private String getWorldWeather(World world) {
+    public String getWorldWeather(World world) {
         boolean isThundering = world.isThundering();
         boolean hasStorm = world.hasStorm();
 
@@ -51,7 +51,7 @@ public class ServerInfoTracker {
         }
     }
 
-    private String getPluginBuildTime() {
+    public String getPluginBuildTime() {
         String buildTime = null;
 
         try {
