@@ -37,7 +37,7 @@ public final class ACAPI extends JavaPlugin {
         PlayerTracker playerTracker = new PlayerTracker(this);
         PlayerStatTracker playerStatTracker = new PlayerStatTracker();
         ServerInfoTracker serverInfoTracker = new ServerInfoTracker(this);
-        PVPTracker PVPTracker = new PVPTracker(this);
+        //PVPTracker PVPTracker = new PVPTracker(this);
 
         // Register events for trackers
         getServer().getPluginManager().registerEvents(playerTracker, this);
