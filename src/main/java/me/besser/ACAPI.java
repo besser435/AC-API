@@ -37,17 +37,15 @@ public final class ACAPI extends JavaPlugin {
         PlayerTracker playerTracker = new PlayerTracker(this);
         PlayerStatTracker playerStatTracker = new PlayerStatTracker();
         ServerInfoTracker serverInfoTracker = new ServerInfoTracker(this);
-        //PVPTracker PVPTracker = new PVPTracker(this);
-
-        // Register events for trackers
-        getServer().getPluginManager().registerEvents(playerTracker, this);
+        PVPTracker PVPTracker = new PVPTracker(this);
 
         // Initialize the API server and pass shared objects
         EndpointServer endpointServer = new EndpointServer(
             this,
             playerTracker,
             playerStatTracker,
-            serverInfoTracker
+            serverInfoTracker,
+            PVPTracker
         );
 
         log(INFO, "AtlasCivs API v" + getDescription().getVersion() + " started!");

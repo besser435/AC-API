@@ -25,7 +25,8 @@ public class BiographyManager {
     }
 
     /**
-     Sets a player's biography. They must be online, and the bio must be shorter than 100 chars.
+     Sets a player's biography. They must be online, and the bio must be shorter than the configured limit,
+     otherwise an IllegalArgumentException will be thrown.
      **/
     public void setBiography(Player player, String biography) {
         if (biography.length() > maxBioChars) {

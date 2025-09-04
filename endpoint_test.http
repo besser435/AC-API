@@ -1,20 +1,25 @@
 // Get online players and some information about them
 //@no-log
-GET http://localhost:1850/api/online_players
+GET http://localhost:9007/api/online_players
 ###
 
 // Full player statistics (player must be online)
 //@no-log
-GET http://localhost:1850/api/full_player_stats/75418e9c-34ef-4926-af64-96d98d10954c
+GET http://localhost:9007/api/full_player_stats/75418e9c-34ef-4926-af64-96d98d10954c
 ###
 
 // Server info
 //@no-log
-GET http://localhost:1850/api/server_info
+GET http://localhost:9007/api/server_info
+###
+
+// PvP log
+//@no-log
+GET http://localhost:9007/api/kill_history
 ###
 
 // Offline player stats (only returns stats under the general category)
 //@no-log
-//GET http://localhost:1850/api/offline_player_stats/75418e9c-34ef-4926-af64-96d98d10954c
+//GET http://localhost:9007/api/offline_player_stats/75418e9c-34ef-4926-af64-96d98d10954c
 // Disabled due to timeout bug
 

@@ -24,6 +24,7 @@ public class PlayerTracker implements Listener {
     public PlayerTracker(ACAPI plugin) {
         this.AFK_THRESHOLD = plugin.getConfig().getInt("acapi.afk_timeout", 180) * 1000;
         this.biographyManager = new BiographyManager(plugin);
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     @EventHandler

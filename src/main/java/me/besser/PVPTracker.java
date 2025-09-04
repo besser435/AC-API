@@ -1,60 +1,86 @@
-//package me.besser;
-//
-//import com.google.gson.JsonObject;
-//import org.bukkit.entity.Player;
-//import org.bukkit.event.EventHandler;
-//import org.bukkit.event.Listener;
-//import org.bukkit.event.entity.PlayerDeathEvent;
-//import org.bukkit.inventory.ItemStack;
-//
-//import java.util.Objects;
-//
-//import static me.besser.BesserLogger.*;
-//
-//public class PVPTracker implements Listener {
-//
-//    private final ACAPI plugin;
-//
-//    public PVPTracker(ACAPI plugin) {
-//        this.plugin = plugin;
-//        plugin.getServer().getPluginManager().registerEvents(this, plugin);
-//    }
-//
-//    @EventHandler
-//    public void onPlayerDeath(PlayerDeathEvent event) {
-//        Player victim = event.getEntity();
-//        Player killer = victim.getKiller();
-//
-//        if (killer == null) return;
-//
-//        log(INFO, victim.getName() + " was killed by " + killer.getName());
-//
-//        ItemStack weapon = killer.getInventory().getItemInMainHand();
-//        if (weapon.getType().isItem()) {
-//            log(INFO, "Weapon Type: " + weapon.getType().name());
-//
-//
-//            if (weapon.hasItemMeta() && Objects.requireNonNull(weapon.getItemMeta()).hasEnchants()) {
-//                weapon.getEnchantments().forEach((enchant, level) -> {
-//                    log(INFO, "Enchantment: " + enchant.toString() + " lvl " + level);
-//
-//                    // TODO: the snipped below will only work if item has enchantments. redo this method
-//                    // once all the data we want is figured out.
-//                    log(INFO, "Weapon Name: " + weapon.getItemMeta().getDisplayName());
-//
-//                });
-//            }
-//        }
-//
-//        log(WARNING, "deathMessage: " + event.getDeathMessage());
-//        log(WARNING, "damageSource: " + event.getDamageSource().toString());
-//    }
-//
-//
-//    public JsonObject getPVPData(Player player) {
-//        JsonObject result = new JsonObject();
-//
-//
-//        return result;
-//    }
-//}
+package me.besser;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.ChatColor;
+
+import java.time.Instant;
+import java.util.LinkedList;
+import java.util.List;
+
+public class PVPTracker implements Listener {
+    private static final int MAX_RECORDS = 50;
+    private final List<PVPKill> killHistory = new LinkedList<>();
+
+    public PVPTracker(ACAPI plugin) {
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    }
+
+    public synchronized List<PVPKill> getLastKills() {
+        return new LinkedList<>(killHistory); // Return a copy to prevent modification
+    }
+
+    public synchronized void addKill(PVPKill kill) {
+        if (killHistory.size() >= MAX_RECORDS) {
+            killHistory.remove(0);
+        }
+        killHistory.add(kill);
+    }
+
+    public record PVPKill(
+        String killer_uuid, String killer_name,
+        String victim_uuid, String victim_name,
+        String death_message,
+        JsonObject weapon,
+        long timestamp
+    ) {}
+
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        Player victim = event.getEntity();
+        Player killer = victim.getKiller();
+
+        if (killer == null) return;
+
+        ItemStack weapon = killer.getInventory().getItemInMainHand();
+        ItemMeta meta = weapon.getItemMeta();
+
+        // Convert weapon info to JSON
+        JsonObject weaponJson = new JsonObject();
+        weaponJson.addProperty("type", weapon.getType().name().toLowerCase());
+
+        if (meta != null) {
+            // Display name
+            if (meta.hasDisplayName()) {
+                String displayName = meta.getDisplayName();
+                weaponJson.addProperty("name", displayName);
+            }
+
+            // Enchantments
+            if (meta.hasEnchants()) {
+                JsonArray enchants = new JsonArray();
+                weapon.getEnchantments().forEach((enchant, level) -> {
+                    JsonObject enchantJson = new JsonObject();
+                    enchantJson.addProperty("id", enchant.getKey().getKey());
+                    enchantJson.addProperty("level", level);
+                    enchants.add(enchantJson);
+                });
+                weaponJson.add("enchantments", enchants);
+            }
+        }
+
+        addKill(new PVPKill(
+            killer.getUniqueId().toString(), killer.getName(),
+            victim.getUniqueId().toString(), victim.getName(),
+            ChatColor.stripColor(event.getDeathMessage()),  // Remove minecraft control codes
+            weaponJson,
+            Instant.now().toEpochMilli()
+        ));
+    }
+}

@@ -9,4 +9,4 @@ acapi:
 
 server:
   # The port where the API endpoints will be accessible
-  port: 1850
+  port: 9007

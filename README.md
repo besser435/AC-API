@@ -1,8 +1,8 @@
 # AtlasCivs API
-ACAPI is a dumbed-down fork of [TAPI](https://github.com/besser435/TEAW-API) for AtlasCivs. It is a super simple plugin that provides a web-server which exposes data about the AtlasCivs Minecraft server. 
-It shows things like online players, Towny info, player statistics, and more.
+AC-API is a dumbed-down fork of [TAPI](https://github.com/besser435/TEAW-API) for AtlasCivs. It is a super simple plugin that provides a web-server which exposes data about the AtlasCivs Minecraft server. 
+It shows things like online players, PvP kills, player statistics, and more.
 
-The Spigot and dependency APIs are very simple, so this can easily be expanded.
+The Spigot API is very simple, so this can easily be expanded.
 
 ## Programmer Notes & To Do
 Spark isn't updated anymore, transition to something else like Javalin. <br>
@@ -12,11 +12,11 @@ Store player statistics locally so that offline players can still be queried.
 ## Configuration
 In the `config.yml` file, there are a few options.
 
-ACAPI implements a nano sized HTTP server for replying to requests, and as such
-needs to live on a port. The default port for the server is 1850.
+AC-API implements a nano sized HTTP server for replying to requests, and as such
+needs to live on a port. The default port for the server is 9007.
 
 ## Endpoints
-  Most endpoint fields are self-explanatory. Where they are not, there will be a note.
+Most endpoint fields are self-explanatory. Where they are not, there will be a note.
 
 
 ### `/api/online_players` GET
@@ -88,18 +88,58 @@ Returns some info about the server and world.
 Example response:
 ```json
 {
-  "acapi_version": "1.0.0",
-  "system_time": 1733635909945,
-  "world_time_24h": "06:10",
-  "weather": "Thunderstorms",
-  "acapi_build": "2024-12-08T05:29:19Z",
-  "world_time_ticks": 180,
-  "server_version": "arclight-1.20.1-1.0.5-1a8925b (MC: 1.20.1)",
-  "day": 756,
-  "loaded_chunks": 1504
+  "acapi_build": "2025-09-04T04:59:48Z",
+  "system_time": 1756962872365,
+  "world_time_24h": "06:08",
+  "acapi_version": "0.0.1",
+  "weather": "Clear",
+  "loaded_chunks": 625,
+  "world_time_ticks": 141,
+  "server_version": "1.21.8-50-51706e5 (MC: 1.21.8)",
+  "day": 3
 }
 
 ```
+
+### `/api/kill_history` GET
+Returns info about PvP kills.
+
+Returns a list of the last 50 Player vs. Player kills. An optional `time` argument can be provided, where only kills after
+the timestamp are provided. The `time` argument is a Unix epoch in milliseconds.
+Ex: `/api/kill_history?time=1756962020017`
+
+Example response:
+```json
+[
+  {
+    "killer_uuid": "75418e9c-34ef-4926-af64-96d98d10954c",
+    "killer_name": "bessyusa",
+    "victim_uuid": "75418e9c-34ef-4926-af64-96d98d10954c",
+    "victim_name": "bessyusa",
+    "death_message": "bessyusa was killed by magic while trying to escape bessyusa",
+    "weapon": {
+      "type": "bow",
+      "enchantments": [
+        {
+          "id": "infinity",
+          "level": 1
+        },
+        {
+          "id": "power",
+          "level": 5
+        },
+        {
+          "id": "flame",
+          "level": 1
+        }
+      ]
+    },
+    "timestamp": 1756962038085
+  }
+]
+```
+
+
 
 ### API Errors
 Any error in the response will be returned as a JSON object along with its HTTP status.
