@@ -1,6 +1,5 @@
 package me.besser;
 
-import com.google.gson.JsonObject;
 import me.besser.commands.BiographyManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -76,30 +75,26 @@ public class PlayerTracker implements Listener {
         return (int) (currentTime - joinTimestamp);
     }
 
-    public JsonObject getOnlinePlayersInfo() {
-        JsonObject result = new JsonObject();
+    public Map<String, Object> getOnlinePlayersInfo() {
+        Map<String, Object> result = new HashMap<>();
 
         // Add player information keyed by UUID
-        JsonObject playersObject = new JsonObject();
+        Map<String, Object> playersObject = new HashMap<>();
 
         for (Player player : org.bukkit.Bukkit.getOnlinePlayers()) {
-            JsonObject playerData = new JsonObject();
+            Map<String, Object> playerData = new HashMap<>();
             String biography = biographyManager.getBiography(player);
 
-            playerData.addProperty("bio", biography != null ? biography : "");
+            playerData.put("bio", biography != null ? biography : "");
+            playerData.put("name", player.getName());
+            playerData.put("first_joined", player.getFirstPlayed());
+            playerData.put("online_duration", getPlayerOnlineDuration(player));
+            playerData.put("afk_duration", getPlayerAFKDuration(player));
 
-            playerData.addProperty("name", player.getName());
-
-            playerData.addProperty("first_joined", player.getFirstPlayed());
-
-            playerData.addProperty("online_duration", getPlayerOnlineDuration(player));
-
-            playerData.addProperty("afk_duration", getPlayerAFKDuration(player));
-
-            playersObject.add(player.getUniqueId().toString(), playerData);
+            playersObject.put(player.getUniqueId().toString(), playerData);
         }
 
-        result.add("online_players", playersObject);
+        result.put("online_players", playersObject);
         return result;
     }
 }

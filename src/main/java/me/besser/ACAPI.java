@@ -8,6 +8,7 @@ import java.util.Objects;
 import static me.besser.BesserLogger.*;
 
 public final class ACAPI extends JavaPlugin {
+    private EndpointServer endpointServer;
 
     @Override
     public void onEnable() {
@@ -40,7 +41,7 @@ public final class ACAPI extends JavaPlugin {
         PVPTracker PVPTracker = new PVPTracker(this);
 
         // Initialize the API server and pass shared objects
-        EndpointServer endpointServer = new EndpointServer(
+        this.endpointServer = new EndpointServer(
             this,
             playerTracker,
             playerStatTracker,
@@ -53,6 +54,10 @@ public final class ACAPI extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (endpointServer != null) {
+            endpointServer.stop();
+        }
+
         log(INFO, "AtlasCivs API v" + getDescription().getVersion() + " stopped!");
     }
 }

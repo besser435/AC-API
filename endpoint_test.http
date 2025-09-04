@@ -18,6 +18,12 @@ GET http://localhost:9007/api/server_info
 GET http://localhost:9007/api/kill_history
 ###
 
+// PvP log with time param
+//@no-log
+GET http://localhost:9007/api/kill_history?time=1756968997966
+###
+
+
 // Offline player stats (only returns stats under the general category)
 //@no-log
 //GET http://localhost:9007/api/offline_player_stats/75418e9c-34ef-4926-af64-96d98d10954c

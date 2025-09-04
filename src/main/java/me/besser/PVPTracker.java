@@ -1,7 +1,5 @@
 package me.besser;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,8 +9,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.ChatColor;
 
 import java.time.Instant;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class PVPTracker implements Listener {
     private static final int MAX_RECORDS = 50;
@@ -37,7 +34,7 @@ public class PVPTracker implements Listener {
         String killer_uuid, String killer_name,
         String victim_uuid, String victim_name,
         String death_message,
-        JsonObject weapon,
+        Map<String, Object> weapon,
         long timestamp
     ) {}
 
@@ -51,27 +48,27 @@ public class PVPTracker implements Listener {
         ItemStack weapon = killer.getInventory().getItemInMainHand();
         ItemMeta meta = weapon.getItemMeta();
 
-        // Convert weapon info to JSON
-        JsonObject weaponJson = new JsonObject();
-        weaponJson.addProperty("type", weapon.getType().name().toLowerCase());
+        // Convert weapon info to Map
+        Map<String, Object> weaponData = new HashMap<>();
+        weaponData.put("type", weapon.getType().name().toLowerCase());
 
         if (meta != null) {
             // Display name
             if (meta.hasDisplayName()) {
                 String displayName = meta.getDisplayName();
-                weaponJson.addProperty("name", displayName);
+                weaponData.put("name", displayName);
             }
 
             // Enchantments
             if (meta.hasEnchants()) {
-                JsonArray enchants = new JsonArray();
+                List<Map<String, Object>> enchantments = new ArrayList<>();
                 weapon.getEnchantments().forEach((enchant, level) -> {
-                    JsonObject enchantJson = new JsonObject();
-                    enchantJson.addProperty("id", enchant.getKey().getKey());
-                    enchantJson.addProperty("level", level);
-                    enchants.add(enchantJson);
+                    Map<String, Object> enchantData = new HashMap<>();
+                    enchantData.put("id", enchant.getKey().getKey());
+                    enchantData.put("level", level);
+                    enchantments.add(enchantData);
                 });
-                weaponJson.add("enchantments", enchants);
+                weaponData.put("enchantments", enchantments);
             }
         }
 
@@ -79,7 +76,7 @@ public class PVPTracker implements Listener {
             killer.getUniqueId().toString(), killer.getName(),
             victim.getUniqueId().toString(), victim.getName(),
             ChatColor.stripColor(event.getDeathMessage()),  // Remove minecraft control codes
-            weaponJson,
+            weaponData,
             Instant.now().toEpochMilli()
         ));
     }

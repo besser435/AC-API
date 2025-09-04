@@ -1,12 +1,10 @@
 package me.besser;
 
-import static spark.Spark.*;
-import com.google.gson.Gson;
+import io.javalin.Javalin;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Map;
 import java.util.UUID;
@@ -16,15 +14,16 @@ import static me.besser.BesserLogger.*;
 public class EndpointServer {
     // TODO: Spark is not maintained anymore. Transition to Javalin.
 
-    private final JavaPlugin plugin;
+    private final ACAPI plugin;
     private final PlayerTracker playerTracker;
     private final PlayerStatTracker playerStatTracker;
     private final ServerInfoTracker serverInfoTracker;
     private final PVPTracker pvpTracker;
-    private final Gson gson = new Gson();
 
-    public EndpointServer(  // TODO: is there a better way to pass objects?
-        JavaPlugin plugin, PlayerTracker playerTracker,
+    private Javalin app;
+
+    public EndpointServer(
+        ACAPI plugin, PlayerTracker playerTracker,
         PlayerStatTracker playerStatTracker, ServerInfoTracker serverInfoTracker, PVPTracker pvpTracker
     ){
         this.plugin = plugin;
@@ -37,48 +36,48 @@ public class EndpointServer {
     }
 
     private void initRoutes() {
-        // Should maybe add a short TTL cache
+        // Should maybe add a short TTL cache in the event this becomes more widely used than for just one fetcher.
         FileConfiguration config = plugin.getConfig();
         int serverPort = config.getInt("server.port", 9007);
 
-        port(serverPort);
+        app = Javalin.create(configure -> {
+            configure.http.defaultContentType = "application/json";
 
-        get("/api/online_players", (request, response) -> {
-            response.type("application/json");
-
-            return gson.toJson(playerTracker.getOnlinePlayersInfo());
+            // Before, we used Spark. The methods were designed for Gson because of that. By default,
+            // Javalin uses its own json parser. That broke stuff, so we use Gson to remain compatible.
+            // This is janky, and we should just make the methods compatible with Javalin. It's not that hard.
+            //import io.javalin.json.JavalinGson;
+            //configure.jsonMapper(new JavalinGson());
+            // update: made the changes so is this is no longer needed :3
         });
 
-        get("/api/full_player_stats/:uuid", (request, response) -> {    // Requires the player to be online
-            String uuidParam = request.params("uuid");
-            response.type("application/json");
+        app.get("/api/online_players", ctx -> {
+            ctx.json(playerTracker.getOnlinePlayersInfo());
+        });
 
+        app.get("/api/full_player_stats/{uuid}", ctx -> {   // Requires the player to be online
+            String uuidParam = ctx.pathParam("uuid");
             try {
                 Player player = Bukkit.getPlayer(UUID.fromString(uuidParam));
 
                 if (player == null || !player.isOnline()) {
-                    response.status(404);
-                    return gson.toJson(Map.of("error", "Player not found or offline"));
+                    ctx.status(404).json(Map.of("error", "Player not found or offline"));
+                    return;
                 }
 
-                return gson.toJson(playerStatTracker.getPlayerStatistics(player));
-
+                ctx.json(playerStatTracker.getPlayerStatistics(player));
             } catch (IllegalArgumentException e) {
-                return gson.toJson(Map.of("error", "UUID malformed"));
+                ctx.status(400).json(Map.of("error", "UUID malformed"));
             }
         });
 
-        get("/api/server_info", (request, response) -> {
-            response.type("application/json");
-
+        app.get("/api/server_info", ctx -> {
             Map<String, Object> serverInfo = serverInfoTracker.getServerInfo();
-            return gson.toJson(serverInfo);
+            ctx.json(serverInfo);
         });
 
-        get("/api/kill_history", (request, response) -> {
-            response.type("application/json");
-
-            String timeParam = request.queryParams("time"); // Using query param as it's optional
+        app.get("/api/kill_history", ctx -> {
+            String timeParam = ctx.queryParam("time");  // Using query param as it's optional
 
             // Get the messages, or if provided, only the ones after a certain timestamp
             long timeFilter = 0;
@@ -86,29 +85,36 @@ public class EndpointServer {
                 try {
                     timeFilter = Long.parseLong(timeParam);
                 } catch (NumberFormatException e) {
-                    response.status(400);
-                    return gson.toJson(Map.of("error", "Invalid time format, expected Unix epoch in milliseconds"));
+                    ctx.status(400).json(Map.of("error", "Invalid time format, expected Unix epoch in milliseconds"));
+                    return;
                 }
             }
 
             long finalTimeFilter = timeFilter;
-            return gson.toJson(pvpTracker.getLastKills().stream()
+            ctx.json(
+                pvpTracker.getLastKills().stream()
                     .filter(kill -> kill.timestamp() > finalTimeFilter)
-                    .toList());
+                    .toList()
+            );
         });
 
-
-        notFound((req, res) -> {
-            res.type("application/json");
-            res.status(404);
-            return gson.toJson(Map.of("error", "Not found"));
+        // Error handling
+        app.error(404, ctx -> {
+            ctx.json(Map.of("error", "Not found"));
         });
 
-        internalServerError((req, res) -> {
-            res.type("application/json");
-            res.status(500);
-            log(WARNING, "Internal server error serving request" );
-            return gson.toJson(Map.of("error", "Internal server error"));
+        app.error(500, ctx -> {
+            log(WARNING, "Internal server error serving request");
+            ctx.json(Map.of("error", "Internal server error"));
         });
+
+        app.start(serverPort);
+    }
+
+    public void stop() {
+        if (app != null) {
+            app.stop();
+            log(INFO, "Javalin server stopped");
+        }
     }
 }
