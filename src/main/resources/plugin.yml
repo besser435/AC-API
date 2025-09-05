@@ -7,7 +7,7 @@ authors: [besser]
 contributors: []
 description: A super simple API for fetching info about AtlasCivs.
 website: https://github.com/besser435/AC-API
-depend: [Essentials]
+depend: []
 
 commands:
   atlas:

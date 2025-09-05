@@ -64,10 +64,6 @@
       <url>https://oss.sonatype.org/content/groups/public/</url>
     </repository>
     <repository>
-      <id>essentials-releases</id>
-      <url>https://repo.essentialsx.net/releases/</url>
-    </repository>
-    <repository>
       <id>papermc</id>
       <url>https://repo.papermc.io/repository/maven-public/</url>
     </repository>
@@ -78,18 +74,6 @@
       <artifactId>spigot-api</artifactId>
       <version>1.21.8-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>net.essentialsx</groupId>
-      <artifactId>EssentialsX</artifactId>
-      <version>2.19.0</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>bstats-bukkit</artifactId>
-          <groupId>org.bstats</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
   </dependencies>
   <properties>

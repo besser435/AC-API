@@ -12,8 +12,6 @@ import java.util.UUID;
 import static me.besser.BesserLogger.*;
 
 public class EndpointServer {
-    // TODO: Spark is not maintained anymore. Transition to Javalin.
-
     private final ACAPI plugin;
     private final PlayerTracker playerTracker;
     private final PlayerStatTracker playerStatTracker;
@@ -40,15 +38,9 @@ public class EndpointServer {
         FileConfiguration config = plugin.getConfig();
         int serverPort = config.getInt("server.port", 9007);
 
-        app = Javalin.create(configure -> {
-            configure.http.defaultContentType = "application/json";
-
-            // Before, we used Spark. The methods were designed for Gson because of that. By default,
-            // Javalin uses its own json parser. That broke stuff, so we use Gson to remain compatible.
-            // This is janky, and we should just make the methods compatible with Javalin. It's not that hard.
-            //import io.javalin.json.JavalinGson;
-            //configure.jsonMapper(new JavalinGson());
-            // update: made the changes so is this is no longer needed :3
+        app = Javalin.create(javalinConfig -> {
+            javalinConfig.http.defaultContentType = "application/json";
+            javalinConfig.showJavalinBanner = false;
         });
 
         app.get("/api/online_players", ctx -> {
