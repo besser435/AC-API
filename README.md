@@ -5,8 +5,8 @@ It shows things like online players, PvP kills, player statistics, and more.
 The Spigot API is very simple, so this can easily be expanded.
 
 ## Programmer Notes & To Do
-Spark isn't updated anymore, transition to something else like Javalin. <br>
-Try to actually be compliant with the [json:api spec](https://jsonapi.org/). <br>
+Try to actually be compliant with the [json:api spec](https://jsonapi.org/).
+
 Store player statistics locally so that offline players can still be queried.
 
 ## Configuration
@@ -26,6 +26,7 @@ Returns a list of online players.
 `afk_duration` Is the AFK duration for a player in milliseconds if they are AFK.
 If the player has moved within the configured AFK threshold, this will be 0.
 
+Players can set a biography with the `/atlas bio set` command.
 
 Example response:
 ```json

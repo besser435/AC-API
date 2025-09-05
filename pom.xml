@@ -97,19 +97,6 @@
             <version>1.21.8-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-<!--        &lt;!&ndash; https://essentialsx.net/wiki/Common-Issues.html#how-do-i-add-essentialsx-as-a-dependency &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>net.essentialsx</groupId>-->
-<!--            <artifactId>EssentialsX</artifactId>-->
-<!--            <version>2.19.0</version>-->
-<!--            <scope>provided</scope>-->
-<!--            <exclusions>    &lt;!&ndash; Causes some kind of caching error. This seems to fix it.&ndash;&gt;-->
-<!--                <exclusion>-->
-<!--                    <groupId>org.bstats</groupId>-->
-<!--                    <artifactId>bstats-bukkit</artifactId>-->
-<!--                </exclusion>-->
-<!--            </exclusions>-->
-<!--        </dependency>-->
         <!--Programming resources-->
         <!-- https://mvnrepository.com/artifact/io.javalin/javalin-->
         <dependency>
