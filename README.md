@@ -36,7 +36,8 @@ Example response:
       "name": "brandonusa",
       "online_duration": 5424,
       "afk_duration": 0,
-      "bio": "Money or else!"
+      "bio": "Money or else!",
+      "first_joined": 1755127887076
     }
   }
 }
