@@ -55,7 +55,8 @@ public class PVPTracker implements Listener {
         if (meta != null) {
             // Display name
             if (meta.hasDisplayName()) {
-                String displayName = meta.getDisplayName();
+                // Stripped to remove custom colors and lore from item renaming plugin
+                String displayName = ChatColor.stripColor(meta.getDisplayName());
                 weaponData.put("name", displayName);
             }
 
@@ -64,7 +65,7 @@ public class PVPTracker implements Listener {
                 List<Map<String, Object>> enchantments = new ArrayList<>();
                 weapon.getEnchantments().forEach((enchant, level) -> {
                     Map<String, Object> enchantData = new HashMap<>();
-                    enchantData.put("id", enchant.getKey().getKey());
+                    enchantData.put("id", enchant.getKey().getKey());   // TODO: fix deprecated method
                     enchantData.put("level", level);
                     enchantments.add(enchantData);
                 });

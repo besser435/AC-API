@@ -34,7 +34,6 @@ public class PlayerTracker implements Listener {
         joinTime.put(player, currentTime);
     }
 
-    // TODO: rename lastMoveTime to lastActivityTime and add more AFK checks like chatting or block entity interactions.
     // Add these changes to TAPI too.
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
@@ -88,6 +87,16 @@ public class PlayerTracker implements Listener {
             playerData.put("bio", biography != null ? biography : "");
             playerData.put("name", player.getName());
             playerData.put("first_joined", player.getFirstPlayed());
+            /*
+            getFirstPlayed() will sometimes return 0.
+            The docs say this is intentional if the player has never played before, but this is a lie.
+            Some players continue to join, but never have their time updated. We can't just test if its 0 and then use the current
+            system time because of this. That would just make it so their first join is always the current date. We need a better
+            solution.
+
+            https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/OfflinePlayer.html#getFirstPlayed()
+            */
+
             playerData.put("online_duration", getPlayerOnlineDuration(player));
             playerData.put("afk_duration", getPlayerAFKDuration(player));
 

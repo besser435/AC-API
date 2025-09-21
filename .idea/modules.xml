@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ACAPI.iml" filepath="$PROJECT_DIR$/ACAPI.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TAPI.iml" filepath="$PROJECT_DIR$/TAPI.iml" />
     </modules>
   </component>
 </project>

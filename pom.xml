@@ -6,7 +6,7 @@
 
     <groupId>me.besser</groupId>
     <artifactId>ACAPI</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>jar</packaging>
 
     <name>ACAPI</name>
@@ -97,8 +97,8 @@
             <version>1.21.8-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-        <!--Programming resources-->
-        <!-- https://mvnrepository.com/artifact/io.javalin/javalin-->
+        <!-- Programming resources -->
+        <!-- https://mvnrepository.com/artifact/io.javalin/javalin -->
         <dependency>
             <groupId>io.javalin</groupId>
             <artifactId>javalin</artifactId>
